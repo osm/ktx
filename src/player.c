@@ -1136,10 +1136,14 @@ void GibPlayer()
 }
 
 void StartDie();
+void PlayerBreak();
 
 void PlayerDie()
 {
 	self->ca_alive = false;
+
+	if (!self->isBot && survival_mode_enabled())
+		PlayerBreak();
 
 	DropPowerups();
 

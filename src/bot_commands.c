@@ -110,7 +110,7 @@ bot_t bots[MAX_BOTS] =
 		{ 0 }
 };
 
-static int FrogbotSkillLevel(void)
+int FrogbotSkillLevel(void)
 {
 	return (int)cvar(FB_CVAR_SKILL);
 }
@@ -1860,11 +1860,24 @@ static void FrogbotsFillServer(void)
 {
 	int max_clients = cvar("maxclients");
 	int plr_count = CountPlayers();
+	int skill_level = FrogbotSkillLevel();
 	int i;
+
+	if (trap_CmdArgc() >= 3)
+	{
+		char temp[10];
+
+		trap_CmdArgv(2, temp, sizeof(temp));
+
+		if (isdigit(temp[0]))
+		{
+			skill_level = atoi(temp);
+		}
+	}
 
 	for (i = 0; i < min(max_clients - plr_count, 8); ++i)
 	{
-		FrogbotsAddbot(FrogbotSkillLevel(), "", true);
+		FrogbotsAddbot(skill_level, "", true);
 	}
 }
 

@@ -1642,6 +1642,12 @@ void PrintCountdown(int seconds)
 		}
 	}
 
+	if (survival_mode_enabled())
+	{
+		strlcat(text, va("\nSurvival mode %2s\n", redtext("on")), sizeof(text));
+		strlcat(text, va("Bot skill %6s\n", dig3(FrogbotSkillLevel())), sizeof(text));
+	}
+
 	if (matchtag[0])
 	{
 		strlcat(text, va("\nmatchtag %s\n\n\n", matchtag), sizeof(text));

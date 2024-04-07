@@ -1059,6 +1059,7 @@ void FirstFrame()
 	RegisterCvar("k_no_scoreboard_ghosts");
 
 	RegisterCvar("k_lgcmode");
+	RegisterCvar("k_survival_mode");
 
 	// private games
 	RegisterCvarEx("k_privategame", "0");                 // whether it is currently on or off

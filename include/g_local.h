@@ -1220,6 +1220,10 @@ void lgc_register_kill(gedict_t *player);
 void lgc_register_miss(vec3_t start, gedict_t *player);
 void lgc_register_hit(vec3_t start, gedict_t *player, gedict_t *victim);
 
+#define SURVIVAL_MODE_VARIABLE "k_survival_mode"
+
+qbool survival_mode_enabled(void);
+
 // private games
 qbool is_private_game(void);
 qbool is_logged_in(gedict_t *p);

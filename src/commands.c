@@ -116,6 +116,7 @@ void ToggleNoSweep();
 void ToggleInstagib();
 void ToggleLGC(void);
 void ToggleCGKickback();
+void ToggleSurvivalMode(void);
 void TogglePowerups();
 void TogglePuPickup();
 void ToggleQEnemy();
@@ -574,6 +575,9 @@ const char CD_NODESC[] = "no desc";
 #define CD_CARENA			"toggle clan arena"
 #define CD_WIPEOUT			"toggle wipeout"
 // }
+// { Survival mode
+#define CD_TOGGLE_SURVIVAL_MODE		"toggle survival mode"
+// }
 #define CD_FORCE_SPEC		"force spec players"
 // { server side bans
 #define CD_BAN				"timed ban by uid/nick"
@@ -937,6 +941,7 @@ cmd_t cmds[] =
 	{ "instagib", 					ToggleInstagib, 				0, 			CF_PLAYER | CF_SPC_ADMIN, 												CD_INSTAGIB },
 	{ "berzerk", 					ToggleBerzerk, 					0, 			CF_PLAYER | CF_SPC_ADMIN, 												CD_BERZERK },
 	{ "lgcmode", 					ToggleLGC, 						0, 			CF_PLAYER | CF_SPC_ADMIN, 												CD_LGC },
+	{ "survivalmode",				ToggleSurvivalMode, 					0, 			CF_PLAYER | CF_SPC_ADMIN, 												CD_TOGGLE_SURVIVAL_MODE },
 	{ "instagib_coilgun_kickback",	ToggleCGKickback, 				0, 			CF_PLAYER | CF_SPC_ADMIN, 												CD_CG_KB },
 	{ "time", 						sv_time, 						0, 			CF_BOTH | CF_MATCHLESS, 												CD_TIME },
 	{ "gren_mode", 					GrenadeMode, 					0, 			CF_PLAYER | CF_SPC_ADMIN, 												CD_GREN_MODE },
@@ -4094,6 +4099,7 @@ const char common_um_init[] =
 	"k_spec_info 1\n"				// allow spectators receive took info during game
 	"k_midair 0\n"					// midair off
 	LGCMODE_VARIABLE " 0\n"			// LGC mode off
+	SURVIVAL_MODE_VARIABLE " 0\n"			// ToT mode off
 	"fraglimit 0\n"					// fraglimit %)
 	"dp 1\n"						// drop pack
 	"dq 0\n"						// drop quad
@@ -4416,6 +4422,29 @@ const char carena_um_init[] =
 	"k_mode 2\n"
 ;
 
+const char survival_um_init[] =
+	"deathmatch 4\n"
+	"dmm4_invinc_time -1\n"
+	"dq 0\n"
+	"dr 0\n"
+	"k_bzk 0\n"
+	"k_exttime 0\n"
+	"k_fb_enabled 1\n"
+	"k_fb_skill 20\n"
+	"k_lockmax 0\n"
+	"k_lockmin 0\n"
+	"k_maxclients 9\n"
+	"k_membercount 0\n"
+	"k_mode 3\n"
+	"k_overtime 0\n"
+	"k_pow 1\n"
+	"k_spw 1\n"
+	"k_tot_mode 1\n"
+	"maxclients 9\n"
+	"teamplay 0\n"
+	"timelimit 5\n"
+;
+
 usermode um_list[] =
 {
 	{ "1on1", 		"\223 on \223", 		_1on1_um_init, 		UM_1ON1, 	 1 },
@@ -4434,6 +4463,7 @@ usermode um_list[] =
 	{ "XonX", 		"X on X", 				_XonX_um_init, 		UM_XONX,	 0 },
 	{ "wipeout", 	"Wipeout", 				wipeout_um_init, 	UM_4ON4,	 0 },
 	{ "ca", 		"Clan Arena", 			carena_um_init, 	UM_4ON4,	 0 },
+	{ "survivalmode", 		"Survival mode", 	survival_um_init, 	UM_FFA,	 0 },
 };
 
 int um_cnt = sizeof(um_list) / sizeof(um_list[0]);
@@ -7278,6 +7308,11 @@ void ToggleMidair()
 		cvar_set(LGCMODE_VARIABLE, "0");
 	}
 
+	if (survival_mode_enabled())
+	{
+		cvar_set(SURVIVAL_MODE_VARIABLE, "0");
+	}
+
 	if (cvar("k_dmm4_gren_mode"))
 	{
 		cvar_set("k_dmm4_gren_mode", "0"); // If midair is enabled, disable gren_mode
@@ -7489,6 +7524,11 @@ void ToggleInstagib()
 		cvar_set(LGCMODE_VARIABLE, "0");
 	}
 
+	if (survival_mode_enabled())
+	{
+		cvar_set(SURVIVAL_MODE_VARIABLE, "0");
+	}
+
 	if (cvar("k_dmm4_gren_mode"))
 	{
 		cvar_set("k_dmm4_gren_mode", "0"); // If instagib is enabled, disable gren_mode
@@ -7584,6 +7624,11 @@ void ToggleLGC(void)
 		cvar_set("k_instagib", "0");
 	}
 
+	if (survival_mode_enabled())
+	{
+		cvar_set(SURVIVAL_MODE_VARIABLE, "0");
+	}
+
 	cvar_set(LGCMODE_VARIABLE, k_lgc ? "1" : "0");
 
 	cvar_toggle_msg(self, LGCMODE_VARIABLE, redtext("LGC mode"));
@@ -7606,6 +7651,37 @@ void ToggleCGKickback()
 	}
 
 	cvar_toggle_msg(self, "k_cg_kb", redtext("Coilgun kickback"));
+}
+
+void ToggleSurvivalMode(void)
+{
+	qbool k_survival_mode = survival_mode_enabled();
+
+	if (!is_rules_change_allowed())
+	{
+		return;
+	}
+
+	if (cvar("k_midair"))
+	{
+		cvar_set("k_midair", "0");
+	}
+
+	if (cvar("k_instagib"))
+	{
+		cvar_set("k_instagib", "0");
+	}
+
+	if (cvar(LGCMODE_VARIABLE))
+	{
+		cvar_set(LGCMODE_VARIABLE, "0");
+	}
+
+	UserMode(um_idx_byname(k_survival_mode ? cvar_string("k_defmode") : "survivalmode") + 1);
+	cvar_set(SURVIVAL_MODE_VARIABLE, k_survival_mode ? "1" : "0");
+	cvar_toggle_msg(self, SURVIVAL_MODE_VARIABLE, redtext("Survival mode"));
+
+	W_SetCurrentAmmo();
 }
 
 void sv_time()
@@ -9114,6 +9190,11 @@ void lgc_register_fire_stop(gedict_t *player)
 	player->lgc_state = lgcUndershaft;
 }
 
+qbool survival_mode_enabled(void)
+{
+	return cvar(SURVIVAL_MODE_VARIABLE) != 0;
+}
+
 void ListGameModes()
 {
 	const char *known[] =
@@ -9142,6 +9223,7 @@ void ListGameModes()
 		"carena",
 		"wipeout",
 		"yawnmode",
+		"totmode",
 	};
 	int i, j;
 

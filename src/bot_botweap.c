@@ -928,6 +928,9 @@ void SelectWeapon(void)
 	}
 
 	CheckNewWeapon(DesiredWeapon());
+
+	if (survival_mode_enabled())
+		self->fb.desired_weapon_impulse = 2;
 }
 
 #endif // BOT_SUPPORT
