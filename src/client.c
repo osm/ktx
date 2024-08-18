@@ -1663,6 +1663,8 @@ void ClientConnect(void)
 	self->fLastSideMoveSpeed = 0;
 	self->matchStrafeChangeCount = 0;
 	self->matchPerfectStrafeCount = 0;
+	self->totalStrafeChangeCount = 0;
+	self->totalPerfectStrafeCount = 0;
 	self->nullStrafeCount = 0;
 
 // ILLEGALFPS[
@@ -3572,15 +3574,17 @@ void PlayerPreThink(void)
 
 	float fSideMoveSpeed = self->movement[1];
 
-	if ( (fSideMoveSpeed != 0) && (fSideMoveSpeed != self->fLastSideMoveSpeed) && (self->nullStrafeCount < 3) ) //strafechange
+	if ((fSideMoveSpeed != 0) && (fSideMoveSpeed != self->fLastSideMoveSpeed) && (self->nullStrafeCount < 3)) //strafechange
 	{
 		self->fStrafeChangeCount += 1;
+		self->totalStrafeChangeCount += 1;
 		if (match_in_progress)
 			self->matchStrafeChangeCount += 1;
 
 		if ((fSideMoveSpeed != 0) && (self->fLastSideMoveSpeed != 0))
 		{
 			self->fFramePerfectStrafeChangeCount += 1;
+			self->totalPerfectStrafeCount += 1;
 			if (match_in_progress)
 				self->matchPerfectStrafeCount += 1;
 		}
@@ -3604,7 +3608,7 @@ void PlayerPreThink(void)
 			int k_allow_socd_warning = cvar("k_allow_socd_warning");
 
 			self->socdDetected += 1;
-			if ( (!match_in_progress) && (!self->isBot) && k_allow_socd_warning && (self->ct == ctPlayer) ) 
+			if ((!match_in_progress) && (!self->isBot) && k_allow_socd_warning && (self->ct == ctPlayer))
 			{
 				G_bprint(PRINT_HIGH,
 					"Warning! %s: Movement assistance detected. Please disable iDrive or keyboard strafe assistance features.\n",
