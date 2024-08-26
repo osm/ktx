@@ -1662,6 +1662,9 @@ void PrintCountdown(int seconds)
 	if (tot_mode_enabled())
 	{
 		strlcat(text, va("\nTribe of Tjernobyl mode %2s\n", redtext("on")), sizeof(text));
+		strlcat(text, va("Kick on SOCD detection %3s\n",
+			(int)cvar("k_allow_socd_warning") ? redtext("on") : redtext("off")),
+			sizeof(text));
 		strlcat(text, va("Break on death %11s\n",
 			(int)cvar(FB_CVAR_BREAK_ON_DEATH) ? redtext("on") : redtext("off")),
 			sizeof(text));

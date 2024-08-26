@@ -3597,11 +3597,11 @@ void PlayerPreThink(void)
 				int k_allow_socd_warning = cvar("k_allow_socd_warning");
 
 				self->socdDetected += 1;
-				if ((!match_in_progress) && (!self->isBot) && k_allow_socd_warning && (self->ct == ctPlayer))
+				if (!self->isBot && k_allow_socd_warning && (self->ct == ctPlayer))
 				{
 					G_bprint(PRINT_HIGH,
-						"Warning! %s: Movement assistance detected. Please disable iDrive or keyboard strafe assistance features.\n",
-						self->netname);
+						"%s %s is using movement assistance. This is not allowed; therefore, he has been kicked from the server\n", redtext("WARNING"), self->netname);
+					stuffcmd(self, "disconnect\n");
 				}
 			}
 
