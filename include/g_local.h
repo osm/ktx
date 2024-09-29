@@ -1225,6 +1225,7 @@ void lgc_register_miss(vec3_t start, gedict_t *player);
 void lgc_register_hit(vec3_t start, gedict_t *player, gedict_t *victim);
 
 #define TOT_MODE_VARIABLE "k_tot_mode"
+#define SOCD_KICK_VARIABLE "k_allow_socd_kick"
 
 qbool tot_mode_enabled(void);
 
