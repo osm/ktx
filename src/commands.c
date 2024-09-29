@@ -112,6 +112,7 @@ void ToggleFreshGuns(void);
 void ToggleFreshTime(void);
 void ToggleNoSweep(void);
 void ToggleInstagib(void);
+void ToggleSOCDKick(void);
 void ToggleLGC(void);
 void ToggleCGKickback(void);
 void ToggleToT(void);
@@ -576,6 +577,9 @@ const char CD_NODESC[] = "no desc";
 // { ToT
 #define CD_TOT				"toggle Tribe of Tjernobyl mode"
 // }
+// { SOCD
+#define CD_SOCDKICK			"toggle SOCD kick"
+// }
 #define CD_FORCE_SPEC		"force spec players"
 // { server side bans
 #define CD_BAN				"timed ban by uid/nick"
@@ -938,6 +942,7 @@ cmd_t cmds[] =
 	{ "freshtime", 					ToggleFreshTime, 				0, 			CF_PLAYER | CF_SPC_ADMIN, 												CD_FRESHTIME },
 	{ "nosweep", 					ToggleNoSweep, 					0, 			CF_PLAYER | CF_SPC_ADMIN, 												CD_NOSWEEP },
 	{ "instagib", 					ToggleInstagib, 				0, 			CF_PLAYER | CF_SPC_ADMIN, 												CD_INSTAGIB },
+	{ "socdkick", 					ToggleSOCDKick, 				0, 			CF_PLAYER | CF_SPC_ADMIN, 												CD_SOCDKICK },
 	{ "berzerk", 					ToggleBerzerk, 					0, 			CF_PLAYER | CF_SPC_ADMIN, 												CD_BERZERK },
 	{ "lgcmode", 					ToggleLGC, 						0, 			CF_PLAYER | CF_SPC_ADMIN, 												CD_LGC },
 	{ "totmode", 					ToggleToT, 						0, 			CF_PLAYER | CF_SPC_ADMIN, 												CD_TOT },
@@ -7592,6 +7597,19 @@ void ToggleInstagib(void)
 	}
 
 	W_SetCurrentAmmo();
+}
+
+void ToggleSOCDKick(void)
+{
+	int k_allow_socd_kick = bound(0, cvar(SOCD_KICK_VARIABLE), 1);
+
+	if (!is_rules_change_allowed())
+	{
+		return;
+	}
+
+	cvar_set(SOCD_KICK_VARIABLE, k_allow_socd_kick ? "1" : "0");
+	cvar_toggle_msg(self, SOCD_KICK_VARIABLE, redtext("SOCD kick"));
 }
 
 void ToggleLGC(void)
