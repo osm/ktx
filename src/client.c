@@ -994,7 +994,7 @@ void ClientKill(void)
 		return;
 	}
 
-	if (g_globalvars.time < self->suicide_time)
+	if (match_in_progress && g_globalvars.time < self->suicide_time)
 	{
 		G_sprint(self, PRINT_HIGH, "Only one suicide in 1 second\n");
 
