@@ -4404,6 +4404,11 @@ void PlayerPostThink(void)
 				self->s.v.ammo_rockets = 100 + (int)(velocity_vert_abs) % 10000 / 100;
 				self->s.v.ammo_cells = 100 + (int)(velocity_vert_abs) % 100;
 			}
+			else if (iKey(self, "kf") & KF_CLOCK)
+			{
+				self->s.v.ammo_shells = 59 - (int)g_globalvars.time % 60;
+				self->s.v.ammo_nails = (int)g_globalvars.time % 60;
+			}
 			else if (isCA())
 			{
 				// do nothing
