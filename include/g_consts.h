@@ -253,6 +253,7 @@
 //										( 256)			if it is set menu_out.cfg will be not called
 //										( 512)			use dmm related map cfg
 //										(1024)			do not use stuff sounds
+#define KF_CLOCK								(2048)	// show clock in prewar
 
 // events
 #define EV_ON_CONNECT					(   1)			//  connect
