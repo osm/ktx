@@ -451,7 +451,7 @@ void armor_touch(void)
 		return;
 	}
 
-	if ((match_in_progress != 2) || !readytostart())
+	if (!k_practice && (match_in_progress != 2 || !readytostart()))
 	{
 		return;
 	}
@@ -823,7 +823,7 @@ void weapon_touch(void)
 		return;
 	}
 
-	if ((match_in_progress != 2) || !readytostart())
+	if (!k_practice && (match_in_progress != 2 || !readytostart()))
 	{
 		return;
 	}
@@ -2083,12 +2083,6 @@ void powerup_touch(void)
 			stuffcmd_flags(other, STUFFCMD_DEMOONLY, "//ktx took %d %d %d\n", NUM_FOR_EDICT(self),
 							60, NUM_FOR_EDICT(other));
 		}
-	}
-
-	// all powerups respawn after 30 seconds in practice mode
-	if (k_practice) // #practice mode#
-	{
-		self->s.v.nextthink = g_globalvars.time + 30;
 	}
 
 	self->s.v.nextthink -= AUTOTRACK_POWERUPS_PREDICT_TIME;
