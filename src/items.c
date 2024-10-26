@@ -2632,6 +2632,8 @@ void BackpackTouch(void)
  ===============
  */
 
+void PlayerBreak(void);
+
 #define IT_DROPPABLE_WEAPONS (IT_SUPER_SHOTGUN|IT_NAILGUN|IT_SUPER_NAILGUN|IT_GRENADE_LAUNCHER|IT_ROCKET_LAUNCHER|IT_LIGHTNING)
 
 void DropBackpack(void)
@@ -2645,6 +2647,13 @@ void DropBackpack(void)
 	{
 		return;
 	}
+
+	if (!self->isBot && tot_mode_enabled() && cvar(FB_CVAR_BREAK_ON_DROP) &&
+		((int)self->s.v.weapon & (IT_AXE | IT_SHOTGUN)) == 0)
+	{
+		PlayerBreak();
+	}
+
 
 	f1 = get_fair_pack();
 
