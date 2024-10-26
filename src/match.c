@@ -1686,6 +1686,9 @@ void PrintCountdown(int seconds)
 		strlcat(text, va("Break on death %11s\n",
 			(int)cvar(FB_CVAR_BREAK_ON_DEATH) ? redtext("on") : redtext("off")),
 			sizeof(text));
+		strlcat(text, va("Break on drop %12s\n",
+			(int)cvar(FB_CVAR_BREAK_ON_DROP) ? redtext("on") : redtext("off")),
+			sizeof(text));
 		strlcat(text, va("Bot weapon %15s\n", redtext(WpName(FrogbotWeapon()))), sizeof(text));
 		strlcat(text, va("Bot health %15s\n", dig3(FrogbotHealth())), sizeof(text));
 		strlcat(text, va("Bot skill %16s\n", dig3(FrogbotSkillLevel())), sizeof(text));
