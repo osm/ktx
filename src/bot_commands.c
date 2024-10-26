@@ -2211,6 +2211,28 @@ static void FrogbotsSetBreakOnDeath(void)
 	cvar_fset(FB_CVAR_BREAK_ON_DEATH, !cvar(FB_CVAR_BREAK_ON_DEATH));
 	G_sprint(self, 2, "break on death changed to \"%s\"\n", (int)cvar(FB_CVAR_BREAK_ON_DEATH) ? "on" : "off");
 
+	if (cvar(FB_CVAR_BREAK_ON_DROP))
+	{
+		cvar_fset(FB_CVAR_BREAK_ON_DROP, !cvar(FB_CVAR_BREAK_ON_DROP));
+		G_sprint(self, 2, "break on drop changed to \"%s\"\n", (int)cvar(FB_CVAR_BREAK_ON_DROP) ? "on" : "off");
+	}
+}
+
+static void FrogbotsSetBreakOnDrop(void)
+{
+	if (!bots_enabled())
+	{
+		G_sprint(self, 2, "Bots are disabled by the server.\n");
+		return;
+	}
+
+	cvar_fset(FB_CVAR_BREAK_ON_DROP, !cvar(FB_CVAR_BREAK_ON_DROP));
+	G_sprint(self, 2, "break on drop changed to \"%s\"\n", (int)cvar(FB_CVAR_BREAK_ON_DROP) ? "on" : "off");
+	if ((int)cvar(FB_CVAR_BREAK_ON_DEATH))
+	{
+		cvar_fset(FB_CVAR_BREAK_ON_DEATH, !cvar(FB_CVAR_BREAK_ON_DEATH));
+		G_sprint(self, 2, "break on death changed to \"%s\"\n", (int)cvar(FB_CVAR_BREAK_ON_DEATH) ? "on" : "off");
+	}
 }
 
 static void FrogbotsToggleQuad(void)
@@ -2276,6 +2298,7 @@ static frogbot_cmd_t std_commands[] =
 		{ "health", FrogbotsSetHealth, "Set initial health for the bot" },
 		{ "weapon", FrogbotsSetWeapon, "Set which weapon the bot should use" },
 		{ "breakondeath", FrogbotsSetBreakOnDeath, "Automatically break when you die" },
+		{ "breakondrop", FrogbotsSetBreakOnDrop, "Break when you drop anything but axe or sg" },
 		{ "togglequad", FrogbotsToggleQuad, "Toggle quad damage" },
 		{ "quadmultiplier", FrogbotsSetQuadMultiplier, "Set quad damage multiplier" }};
 

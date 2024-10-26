@@ -405,6 +405,7 @@ qbool HasSavedMarker(void);
 #define FB_CVAR_HEALTH          "k_fb_health"
 #define FB_CVAR_WEAPON          "k_fb_weapon"
 #define FB_CVAR_BREAK_ON_DEATH  "k_fb_break_on_death"
+#define FB_CVAR_BREAK_ON_DROP   "k_fb_break_on_drop"
 #define FB_CVAR_QUAD_MULTIPLIER "k_fb_quad_multiplier"
 
 void BotsFireLogic(void);
