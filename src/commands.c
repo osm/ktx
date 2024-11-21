@@ -51,6 +51,7 @@ void votecoop(void);
 void RandomPickup(void);
 void ShowDMM(void);
 void ChangeDM(float dmm);
+void DamageLG(void);
 void ChangeLock(void);
 void ChangeOvertime(void);
 void ChangeOvertimeUp(void);
@@ -676,6 +677,7 @@ const char CD_NODESC[] = "no desc";
 #define CD_ROUNDSDOWN		"decrease rounds in match"
 
 #define CD_GAMEMODES		"list available game modes"
+#define CD_DAMAGE_LG		"set lightning gun damage"
 
 void dummy(void)
 {
@@ -1049,6 +1051,7 @@ cmd_t cmds[] =
 	{ "voteprivate", 				private_game_vote, 				0, 			CF_PLAYER, 																CD_PRIVATEGAME },
 
 	{ "gamemodes",					ListGameModes,					0,			CF_BOTH,																CD_GAMEMODES },
+	{ "damagelg", 					DamageLG, 					0, 			CF_PLAYER | CF_PARAMS, 															CD_DAMAGE_LG },
 };
 
 #undef DEF
@@ -2815,6 +2818,28 @@ void ChangeDM(float dmm)
 	}
 
 	G_bprint(2, "Deathmatch %s\n", dig3(deathmatch));
+}
+
+void DamageLG(void)
+{
+	char argv[32];
+	int damage;
+
+	if (!is_rules_change_allowed())
+	{
+		return;
+	}
+
+	if (trap_CmdArgc() != 2)
+	{
+		G_sprint(self, 2, "use: /damagelg <value>, default: %s\n", DEFAULT_DAMAGE_LG);
+		return;
+	}
+
+	trap_CmdArgv(1, argv, sizeof(argv));
+	damage = bound(1, atoi(argv), 99);
+	trap_cvar_set_float("k_damage_lg", damage);
+	G_bprint(2, "LG damage set to %s\n", dig3(damage));
 }
 
 void ChangeTP(void)
