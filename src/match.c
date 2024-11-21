@@ -1647,6 +1647,12 @@ void PrintCountdown(int seconds)
 		}
 	}
 
+	if ((int)cvar("k_damage_lg") != atoi(DEFAULT_DAMAGE_LG))
+	{
+		strlcat(text, va("%s %3s\n", "LG damage", dig3((float)cvar("k_damage_lg"))), sizeof(text));
+	}
+
+
 	if (tot_mode_enabled())
 	{
 		int weapon = FrogbotWeapon();

@@ -113,6 +113,9 @@
 #define IT_QUAD							4194304
 #define IT_HOOK							8388608
 
+// Default weapon damages
+#define DEFAULT_DAMAGE_LG				"30"
+
 /* Could use these so clients can display which rune they have
  #define IT_SIGIL1 (1<<28)
  #define IT_SIGIL2 (1<<29)
