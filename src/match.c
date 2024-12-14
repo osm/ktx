@@ -1900,6 +1900,19 @@ void TimerStartThink(void)
 
 	self->cnt2 -= 1;
 
+	if (prevent_milton_spawn_manipulation())
+	{
+		if (self->cnt2 == 5)
+		{
+			for (p = world; (p = find_plr(p));)
+			{
+				p->gravity = 0;
+				p->maxspeed = 0;
+				SetVector(p->s.v.velocity, 0, 0, 0);
+			}
+		}
+	}
+
 	if (self->cnt2 == 1)
 	{
 		p = spawn();

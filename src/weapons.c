@@ -2877,6 +2877,11 @@ void W_WeaponFrame(void)
 		return; // discard +attack till 50 ms after respawn, like ktpro 
 	}
 
+	if (prevent_milton_spawn_manipulation())
+	{
+		return;
+	}
+
 	if (self->wreg_attack) // client simulate +attack via "cmd wreg" feature
 	{
 		self->s.v.button0 = true;

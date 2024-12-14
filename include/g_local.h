@@ -1245,3 +1245,5 @@ extern int maxPlayerCount;
 #define AUTOTRACK_POWERUPS_PREDICT_TIME 2
 
 qbool AllowMonster(gedict_t *e);
+
+qbool prevent_milton_spawn_manipulation(void);

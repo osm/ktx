@@ -1777,10 +1777,14 @@ void PutClientInServer(void)
 // brokenankle
 	self->brokenankle = 0;
 
+// qqshka - ctf stuff, discard haste rune modifier after u die
+// also used for prevention of miltons spawn manipulation
+	self->maxspeed = prevent_milton_spawn_manipulation() ? 0 : cvar("sv_maxspeed");
+	self->gravity = prevent_milton_spawn_manipulation() ? 0 : 1;
+
 // ctf
 	self->on_hook = false;
 	self->hook_out = false;
-	self->maxspeed = cvar("sv_maxspeed"); // qqshka - ctf stuff, discard haste rune modifier after u die
 	self->regen_time = -1;
 	self->carrier_hurt_time = -1;
 	self->ctf_flag = 0;
@@ -2566,6 +2570,12 @@ void PlayerJump(void)
 	else
 	{
 		self->s.v.velocity[2] = -270;
+	}
+
+	if (prevent_milton_spawn_manipulation())
+	{
+		self->s.v.velocity[2] = -270;
+		return;
 	}
 }
 

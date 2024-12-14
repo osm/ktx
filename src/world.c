@@ -874,6 +874,7 @@ void FirstFrame(void)
 	RegisterCvarEx("k_spm_custom_model", "0");
 	RegisterCvarEx("k_spm_color_rgba", "1.0 1.0 1.0 1.0");
 	RegisterCvar("k_entityfile");
+	RegisterCvar("k_prevent_milton_spawn_manipulation");
 // { hoonymode
 	RegisterCvarEx("k_hoonymode", "0");
 	RegisterCvarEx("k_hoonyrounds", "6");

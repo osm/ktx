@@ -2816,3 +2816,11 @@ char* make_dots(char *dots, size_t dots_len, int cmd_max_len, char *cmd)
 	dots[len] = 0;
 	return dots;
 }
+
+qbool prevent_milton_spawn_manipulation(void)
+{
+	gedict_t *timer;
+
+	return cvar("k_prevent_milton_spawn_manipulation") && match_in_progress == 1 &&
+		(timer = find(world, FOFCLSN, "timer")) && timer->cnt2 <= 5 && timer->cnt2 >= 1;
+}
