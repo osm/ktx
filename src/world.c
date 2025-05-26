@@ -932,6 +932,10 @@ void FirstFrame(void)
 	RegisterCvar("k_demoname_date"); // add date to demo name, value is argument for strftime() function
 	RegisterCvarEx("k_count", "10");
 	RegisterCvar("k_exclusive"); // stores whether players can join when a game is already in progress
+	RegisterCvarEx("k_countdown_message_head", "");
+	RegisterCvarEx("k_countdown_message_body", "");
+	RegisterCvarEx("k_countdown_message_foot", "");
+
 	RegisterCvar("k_lockmode");
 	RegisterCvar("k_short_gib");
 	RegisterCvar("k_ann");

@@ -1408,8 +1408,34 @@ void PrintCountdown(int seconds)
 	char *ot = "";
 	char *nowp = "";
 	char *matchtag = redtext(ezinfokey(world, "matchtag"));
+	qbool haveHead, haveBody, haveFoot;
 
 	strlcat(text, va("%s: %2s\n\n\n", redtext("Countdown"), dig3(seconds)), sizeof(text));
+
+	haveHead = strlen(cvar_string("k_countdown_message_head"));
+	haveBody = strlen(cvar_string("k_countdown_message_body"));
+	haveFoot = strlen(cvar_string("k_countdown_message_foot"));
+	if (seconds > 10 && (haveHead || haveBody || haveFoot))
+	{
+		if (haveHead)
+		{
+			strlcat(text, va("%s\n\n", cvar_string("k_countdown_message_head")),
+				sizeof(text));
+		}
+		if (haveBody)
+		{
+			strlcat(text, va("%s\n\n", cvar_string("k_countdown_message_body")),
+				sizeof(text));
+		}
+		if (haveFoot)
+		{
+			strlcat(text, va("%s\n\n", cvar_string("k_countdown_message_foot")),
+				sizeof(text));
+		}
+
+		goto print;
+	}
+
 
 //	if (matchtag[0]) {
 //		strlcat(text, va("matchtag %s\n\n\n", matchtag), sizeof(text));
@@ -1716,6 +1742,7 @@ void PrintCountdown(int seconds)
 		strlcat(text, "\nno matchtag\n\n\n", sizeof(text));
 	}
 
+print:
 	G_cp2all("%s", text);
 }
 
