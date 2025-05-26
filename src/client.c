@@ -4996,12 +4996,32 @@ void StatsHandler(gedict_t *targ, gedict_t *attacker)
 		{
 			// team kill
 			attacker->ps.wpn[wp].tkills++;
+
+			if ((items & IT_QUAD))
+			{
+				attacker->ps.itm[itQUAD].tkills++;
+			}
+
+			if ((items & IT_INVISIBILITY))
+			{
+				attacker->ps.itm[itRING].tkills++;
+			}
+
+			if (targ->deathtype == dtLG_DIS)
+			{
+				attacker->ps.discharge_tkills++;
+			}
 		}
 		else
 		{
 			// normal kill
 			attacker->ps.wpn[wp].kills++;
 			targ->ps.wpn[wp].deaths++;
+
+			if (targ->deathtype == dtLG_DIS)
+			{
+				attacker->ps.discharge_ekills++;
+			}
 
 			// hmm, may be add some priority? so if targ have rl and gl bump only wpn[wpRL].ekills ?
 			if ((items & IT_AXE))
@@ -5042,6 +5062,16 @@ void StatsHandler(gedict_t *targ, gedict_t *attacker)
 			if ((items & IT_LIGHTNING))
 			{
 				attacker->ps.wpn[wpLG].ekills++;
+			}
+
+			if ((items & IT_QUAD))
+			{
+				attacker->ps.itm[itQUAD].ekills++;
+			}
+
+			if ((items & IT_INVISIBILITY))
+			{
+				attacker->ps.itm[itRING].ekills++;
 			}
 		}
 	}

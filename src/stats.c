@@ -665,6 +665,17 @@ void OnePlayerStats(gedict_t *p, int tp)
 	int str;
 	int hst;
 	int rgn;
+	int axe_kills_enemy, axe_kills_team;
+	int sg_kills_enemy, sg_kills_team;
+	int ssg_kills_enemy, ssg_kills_team;
+	int ng_kills_enemy, ng_kills_team;
+	int sng_kills_enemy, sng_kills_team;
+	int gl_kills_enemy, gl_kills_team;
+	int rl_kills_enemy, rl_kills_team;
+	int lg_kills_enemy, lg_kills_team;
+	int discharge_kills_enemy, discharge_kills_team;
+	int killed_enemy_quads, killed_team_quads;
+	int killed_enemy_rings, killed_team_rings;
 
 	dmg_g = p->ps.dmg_g;
 	dmg_g_rl = p->ps.dmg_g_rl;
@@ -700,6 +711,29 @@ void OnePlayerStats(gedict_t *p, int tp)
 	ph_gl = 100.0 * vh_gl / max(1, a_gl);
 	ph_rl = 100.0 * vh_rl / max(1, a_rl);
 	e_lg = 100.0 * h_lg / max(1, a_lg);
+
+	axe_kills_enemy = p->ps.wpn[wpAXE].kills;
+	axe_kills_team = p->ps.wpn[wpAXE].tkills;
+	sg_kills_enemy = p->ps.wpn[wpSG].kills;
+	sg_kills_team = p->ps.wpn[wpSG].tkills;
+	ssg_kills_enemy = p->ps.wpn[wpSSG].kills;
+	ssg_kills_team = p->ps.wpn[wpSSG].tkills;
+	ng_kills_enemy = p->ps.wpn[wpNG].kills;
+	ng_kills_team = p->ps.wpn[wpNG].tkills;
+	sng_kills_enemy = p->ps.wpn[wpSNG].kills;
+	sng_kills_team = p->ps.wpn[wpSNG].tkills;
+	gl_kills_enemy = p->ps.wpn[wpGL].kills;
+	gl_kills_team = p->ps.wpn[wpGL].tkills;
+	rl_kills_enemy = p->ps.wpn[wpRL].kills;
+	rl_kills_team = p->ps.wpn[wpRL].tkills;
+	lg_kills_enemy = p->ps.wpn[wpLG].kills;
+	lg_kills_team = p->ps.wpn[wpLG].tkills;
+	discharge_kills_enemy = p->ps.discharge_ekills;
+	discharge_kills_team = p->ps.discharge_tkills;
+	killed_enemy_quads = p->ps.itm[itQUAD].ekills;
+	killed_team_quads = p->ps.itm[itQUAD].tkills;
+	killed_enemy_rings = p->ps.itm[itRING].ekills;
+	killed_team_rings = p->ps.itm[itRING].tkills;
 
 	d_rl = p->ps.wpn[wpRL].drops;
 	k_rl = p->ps.wpn[wpRL].ekills;
@@ -868,6 +902,73 @@ void OnePlayerStats(gedict_t *p, int tp)
 						(int)p->ps.itm[itQUAD].time);
 		}
 	}
+
+	// quad / ring kills
+	if (isTeam() || isCTF())
+	{
+		G_bprint(PRINT_HIGH, "%s: %s:%d %s:%d\n",
+			redtext("Killed Q"),
+			redtext("Enemy"), killed_enemy_quads,
+			redtext("Team"), killed_team_quads);
+		G_bprint(PRINT_HIGH, "%s: %s:%d %s:%d\n",
+			redtext("Killed R"),
+			redtext("Enemy"), killed_enemy_rings,
+			redtext("Team"), killed_team_rings);
+	}
+
+	if (axe_kills_enemy || axe_kills_team)
+		G_bprint(PRINT_HIGH, "%s: %s:%d %s:%d\n",
+			redtext("AXE KILL"),
+			redtext("Enemy"), axe_kills_enemy,
+			redtext("Team"), axe_kills_team);
+
+	if (sg_kills_enemy || sg_kills_team)
+		G_bprint(PRINT_HIGH, "%s: %s:%d %s:%d\n",
+			redtext(" SG KILL"),
+			redtext("Enemy"), sg_kills_enemy,
+			redtext("Team"), sg_kills_team);
+
+	if (ssg_kills_enemy || ssg_kills_team)
+		G_bprint(PRINT_HIGH, "%s: %s:%d %s:%d\n",
+			redtext("SSG KILL"),
+			redtext("Enemy"), sg_kills_enemy,
+			redtext("Team"), sg_kills_team);
+
+	if (ng_kills_enemy || ng_kills_team)
+		G_bprint(PRINT_HIGH, "%s: %s:%d %s:%d\n",
+			redtext(" NG KILL"),
+			redtext("Enemy"), ng_kills_enemy,
+			redtext("Team"), ng_kills_team);
+
+	if (sng_kills_enemy || sng_kills_team)
+		G_bprint(PRINT_HIGH, "%s: %s:%d %s:%d\n",
+			redtext("SNG KILL"),
+			redtext("Enemy"), sng_kills_enemy,
+			redtext("Team"), sng_kills_team);
+
+	if (gl_kills_enemy || gl_kills_team)
+		G_bprint(PRINT_HIGH, "%s: %s:%d %s:%d\n",
+			redtext(" GL KILL"),
+			redtext("Enemy"), gl_kills_enemy,
+			redtext("Team"), gl_kills_team);
+
+	if (rl_kills_enemy || rl_kills_team)
+		G_bprint(PRINT_HIGH, "%s: %s:%d %s:%d\n",
+			redtext(" RL KILL"),
+			redtext("Enemy"), rl_kills_enemy,
+			redtext("Team"), rl_kills_team);
+
+	if (lg_kills_enemy || lg_kills_team)
+		G_bprint(PRINT_HIGH, "%s: %s:%d %s:%d\n",
+			redtext(" LG KILL"),
+			redtext("Enemy"), lg_kills_enemy,
+			redtext("Team"), lg_kills_team);
+
+	if (discharge_kills_enemy || discharge_kills_team)
+		G_bprint(PRINT_HIGH, "%s: %s:%d %s:%d\n",
+			redtext(" DC KILL"),
+			redtext("Enemy"), discharge_kills_enemy,
+			redtext("Team"), discharge_kills_team);
 
 	if (isDuel())
 	{

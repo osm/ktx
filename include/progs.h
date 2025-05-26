@@ -124,6 +124,8 @@ typedef struct itType_s
 {
 	int tooks;	// taken count
 	float time;	// total time u have some item
+	int ekills;	// killed enemies which contain this item in inventory
+	int tkills;	// killed team mates which contain this item in inventory
 } itType_t;
 
 // store player statistic here, like taken armors etc...
@@ -152,6 +154,8 @@ typedef struct player_stats_s
 	int handicap;
 	int transferred_RLpacks;
 	int transferred_LGpacks;
+	int discharge_tkills;
+	int discharge_ekills;
 
 	// ctf stats
 	int ctf_points;			// use frags - this to calculate efficiency for ctf
