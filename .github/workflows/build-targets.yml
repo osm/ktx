@@ -1,0 +1,106 @@
+name: build targets
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ${{ matrix.base-image }}
+    strategy:
+      fail-fast: true
+      matrix:
+        target:
+          - freebsd-amd64
+          - linux-amd64
+          - linux-arm64
+          - qvm
+          - windows-amd64
+        include:
+          - target: freebsd-amd64
+            arch: amd64
+            base-image: ubuntu-latest
+            ext: ".so"
+            os: freebsd
+          - target: linux-amd64
+            arch: amd64
+            base-image: ubuntu-latest
+            build-image: amd64/debian:stable
+            ext: ".so"
+            os: linux
+          - target: linux-arm64
+            arch: arm64
+            base-image: ubuntu-latest
+            build-image: arm64v8/debian:stable
+            ext: ".so"
+            os: linux
+          - target: windows-amd64
+            arch: x64
+            base-image: ubuntu-latest
+            ext: ".dll"
+            os: windows
+          - target: qvm
+            arch: qvm
+            base-image: ubuntu-latest
+            ext: ".qvm"
+            os: qvm
+
+    env:
+      BRANCH_NAME: ${{ github.ref_name }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: FreeBSD Build
+        if: matrix.os == 'freebsd'
+        uses: vmactions/freebsd-vm@v1
+        with:
+          release: "14.2"
+          usesh: true
+          prepare: |
+            pkg install -y bash cmake git
+          run: |
+            ./build_cmake.sh ${{ matrix.target }}
+
+      - name: Set up QEMU
+        if: matrix.os == 'linux'
+        uses: docker/setup-qemu-action@v3
+
+      - name: Linux Build
+        if: matrix.os == 'linux'
+        run: |
+          docker run --platform linux/${{ matrix.arch }} --net=host --rm --device /dev/fuse -v $PWD:/ktx -w /ktx ${{ matrix.build-image }} bash -c "
+            set -e
+            apt-get -qq update
+            apt-get -qq --no-install-recommends install cmake build-essential ninja-build
+
+            ./build_cmake.sh ${{ matrix.target }}
+            chown -R \$(id -u):\$(id -g) build/${{ matrix.target  }}/qwprogs${{ matrix.ext }}
+          "
+
+      - name: Build Windows
+        if: matrix.os == 'windows'
+        shell: bash
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get -qq --no-install-recommends install build-essential cmake gcc-mingw-w64-x86-64
+
+          ./build_cmake.sh ${{ matrix.target }}
+
+      - name: Build QVM
+        if: matrix.os == 'qvm'
+        shell: bash
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get -qq --no-install-recommends install build-essential cmake
+
+          git clone https://github.com/ec-/q3lcc.git q3lcc
+          cd q3lcc
+          make -j $(nproc) PLATFORM=$(uname -s) ARCH=$(uname -m)
+          sudo mv build*/q3lcc build*/q3rcc build*/q3cpp /usr/local/bin
+          cd ..
+
+          ./build_cmake.sh ${{ matrix.target }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          compression-level: 9
+          name: ${{ format('qwprogs{0}-{1}', contains(env.BRANCH_NAME, 'antilag') && format('-{0}', env.BRANCH_NAME) || '', matrix.target) }}
+          path: build/${{ matrix.target }}/qwprogs${{ matrix.ext }}
