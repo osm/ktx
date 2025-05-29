@@ -931,8 +931,8 @@ void OnePlayerStats(gedict_t *p, int tp)
 	if (ssg_kills_enemy || ssg_kills_team)
 		G_bprint(PRINT_HIGH, "%s: %s:%d %s:%d\n",
 			redtext("SSG KILL"),
-			redtext("Enemy"), sg_kills_enemy,
-			redtext("Team"), sg_kills_team);
+			redtext("Enemy"), ssg_kills_enemy,
+			redtext("Team"), ssg_kills_team);
 
 	if (ng_kills_enemy || ng_kills_team)
 		G_bprint(PRINT_HIGH, "%s: %s:%d %s:%d\n",
