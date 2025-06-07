@@ -10,8 +10,9 @@ jobs:
           - freebsd-amd64
           - linux-amd64
           - linux-arm64
-          - qvm
+          - openbsd-amd64
           - windows-amd64
+          - qvm
         include:
           - target: freebsd-amd64
             arch: amd64
@@ -35,6 +36,11 @@ jobs:
             base-image: ubuntu-latest
             ext: ".dll"
             os: windows
+          - target: openbsd-amd64
+            arch: amd64
+            base-image: ubuntu-latest
+            ext: ".so"
+            os: openbsd
           - target: qvm
             arch: qvm
             base-image: ubuntu-latest
@@ -74,6 +80,17 @@ jobs:
             ./build_cmake.sh ${{ matrix.target }}
             chown -R \$(id -u):\$(id -g) build/${{ matrix.target  }}/qwprogs${{ matrix.ext }}
           "
+
+      - name: OpenBSD Build
+        if: matrix.os == 'openbsd'
+        uses: vmactions/openbsd-vm@v1
+        with:
+          release: '7.7'
+          usesh: true
+          prepare: |
+            pkg_add bash cmake git
+          run: |
+            ./build_cmake.sh ${{ matrix.target }}
 
       - name: Build Windows
         if: matrix.os == 'windows'
