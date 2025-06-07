@@ -179,6 +179,10 @@ else()
 		target_link_options(${PROJECT_NAME} PRIVATE "-Wl,--no-undefined")
 	endif()
 	target_link_libraries(${PROJECT_NAME} PRIVATE m) # Link with libm.
+
+	if (NEEDS_EXPLICIT_LIBC)
+		target_link_libraries(${PROJECT_NAME} PRIVATE c)
+	endif()
 endif()
 
 
