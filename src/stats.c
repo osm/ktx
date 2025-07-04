@@ -798,7 +798,7 @@ void OnePlayerStats(gedict_t *p, int tp)
 	}
 
 	// movement
-	if (!p->isBot)
+	if (!p->isBot && cvar("k_socd") >= SOCD_STATS)
 	{
 		G_bprint(2, "%s: %s:%.1f%% (%d/%d) %s:%d/%d\n", redtext("Movement"), redtext("Perfect strafes"),
 			p->matchStrafeChangeCount > 0 ? 100.0 * p->matchPerfectStrafeCount / p->matchStrafeChangeCount : 0.0,

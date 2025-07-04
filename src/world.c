@@ -1011,7 +1011,7 @@ void FirstFrame(void)
 
 	RegisterCvar("k_teamoverlay"); // q3 like team overlay
 
-	RegisterCvar("k_allow_socd_warning"); // socd
+	RegisterCvarEx("k_socd", "1");
 
 // { SP
 	RegisterCvarEx("k_monster_spawn_time", "20");
