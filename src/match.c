@@ -1231,6 +1231,11 @@ void StartMatch(void)
 
 	HideSpawnPoints();
 
+	if (SpawnicideStatus() < SPAWNICIDE_MATCH)
+	{
+		SpawnicideDisable();
+	}
+
 	match_start_time = g_globalvars.time;
 	g_matchstarttime = (int)(g_globalvars.time * 1000);
 	match_in_progress = 2;
@@ -1729,6 +1734,11 @@ void PrintCountdown(int seconds)
 	if (!isRA() && Get_Powerups() && strneq("off", Get_PowerupsStr()))
 	{
 		strlcat(text, va("%s %4s\n", "Powerups", redtext(Get_PowerupsStr())), sizeof(text));
+	}
+
+	if (SpawnicideStatus() == SPAWNICIDE_MATCH)
+	{
+		strlcat(text, va("Spawnicide %s\n", redtext("on")), sizeof(text));
 	}
 
 	strlcat(text, va("%s %8s\n", "SOCD",
