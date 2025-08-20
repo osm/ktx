@@ -1218,6 +1218,7 @@ typedef struct gedict_s
 // {
 	// let mvdsv know when player has teleported, and adjust for high-ping
 	int teleported;
+	float teleported_time;
 // }
 
 // {
