@@ -696,7 +696,7 @@ void Customize_Maps(void)
 		}
 	}
 
-	if (SpawnicideStatus() > SPAWNICIDE_DISABLED)
+	if (SpawnicideStatus() == SPAWNICIDE_PREWAR)
 	{
 		SpawnicideEnable();
 	}
