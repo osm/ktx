@@ -2973,7 +2973,7 @@ gedict_t* Spawn_OnePoint(gedict_t *spawn_point, vec3_t org, int effects)
 
 void Spawn_SpawnPoints(char *classname, int effects)
 {
-	gedict_t *e;
+	gedict_t *e, *s;
 	vec3_t org;
 
 	for (e = world; (e = ez_find(e, classname));)
@@ -2987,6 +2987,32 @@ void Spawn_SpawnPoints(char *classname, int effects)
 		}
 
 		Spawn_OnePoint(e, org, effects);
+	}
+
+	if (SpawnicideStatus())
+	{
+		for (e = world; (e = ez_find(e, "trigger_teleport"));)
+		{
+			if (e->targetname)
+			{
+				continue;
+			}
+
+			if (!(s = find(world, FOFS(targetname), e->target)))
+			{
+				continue;
+			}
+
+			VectorCopy(s->s.v.origin, org);
+			org[2] += 0;
+
+			if (isHoonyModeDuel())
+			{
+				effects = (e->hoony_nomination ? (EF_GREEN | EF_RED) : 0);
+			}
+
+			Spawn_OnePoint(s, org, effects);
+		}
 	}
 }
 
@@ -3102,13 +3128,6 @@ void SpawnicideEnable(void)
 		VectorCopy(s->s.v.origin, org);
 		org[2] += 0;
 		SpawnicideCreate(e, org);
-
-		// If k_spm_show is enabled, we'll also render a spawn point
-		// over the teleporter exit coordinates.
-		if (cvar("k_spm_show"))
-		{
-			Spawn_OnePoint(s, org, cvar("k_spm_glow") ? ( EF_GREEN | EF_RED) : 0);
-		}
 	}
 }
 

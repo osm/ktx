@@ -478,6 +478,11 @@ void EndMatch(float skip_log)
 	{
 		g_matchstarttime = 0;
 	}
+
+	if (SpawnicideStatus() == SPAWNICIDE_MATCH)
+	{
+		SpawnicideDisable();
+	}
 }
 
 void SaveOvertimeStats(void)
@@ -1231,7 +1236,11 @@ void StartMatch(void)
 
 	HideSpawnPoints();
 
-	if (SpawnicideStatus() < SPAWNICIDE_MATCH)
+	if (SpawnicideStatus() == SPAWNICIDE_MATCH)
+	{
+		SpawnicideEnable();
+	}
+	else
 	{
 		SpawnicideDisable();
 	}

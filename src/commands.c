@@ -2745,7 +2745,6 @@ void ToggleSpawnicide(void)
 			G_sprint(self, 2, "Spawnicide %s\n", redtext("prewar"));
 			break;
 		case SPAWNICIDE_MATCH:
-			SpawnicideEnable();
 			G_sprint(self, 2, "Spawnicide %s\n", redtext("match"));
 			break;
 	}
