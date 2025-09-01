@@ -22,13 +22,13 @@ jobs:
           - target: linux-amd64
             arch: amd64
             base-image: ubuntu-latest
-            build-image: amd64/debian:stable
+            build-image: amd64/debian:bookworm
             ext: ".so"
             os: linux
           - target: linux-arm64
             arch: arm64
             base-image: ubuntu-latest
-            build-image: arm64v8/debian:stable
+            build-image: arm64v8/debian:bookworm
             ext: ".so"
             os: linux
           - target: windows-amd64
