@@ -1631,12 +1631,12 @@ qbool CanConnect(void)
 /*
  * Whether this client can make use of the weapon state.
  *
- * Running csqc is the whole of it for a client using the csprogs this server
+ * In mode 1, running csqc is enough for a client using the csprogs this server
  * ships: the weapon definitions are compiled into it.
  */
 static qbool WeaponPrediction_ClientReady(gedict_t *p)
 {
-	return iKey(p, "csqcactive");
+	return IsAntilag1() && iKey(p, "csqcactive");
 }
 
 qbool WeaponPrediction_SendEntity(int sendflags)

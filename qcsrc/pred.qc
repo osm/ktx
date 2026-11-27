@@ -16,7 +16,7 @@ float Pred_Enabled(void)
 	if (intermission)
 		return FALSE;
 
-	return TRUE;
+	return serverkey("sv_antilag") == "1";
 }
 
 /*
