@@ -150,7 +150,7 @@ static qbool ProjectileIsLive(gedict_t *projectile)
  */
 static void ScheduleProjectileSendIfLive(gedict_t *projectile)
 {
-	if (cvar("sv_antilag") != 1)
+	if (!antilag_projectile_cap_ms())
 	{
 		return;
 	}
@@ -1203,7 +1203,7 @@ void T_MissileTouch(void)
 
 	// don't do radius damage to the other, because all the damage
 	// was done in the impact
-	if (cvar("sv_antilag") == 1) // if this is an anti lag rocket, ignore our owner
+	if (antilag_projectile_cap_ms()) // handle the owner's splash separately
 	{
 		float delay, speed;
 		vec3_t diff, traveled;
@@ -1354,7 +1354,7 @@ void W_FireRocket(void)
 	}
 #endif
 
-	if (cvar("sv_antilag") == 1)
+	if (antilag_projectile_cap_ms())
 	{
 		g_globalvars.newmis = EDICT_TO_PROG(world);
 		newmis = world;
@@ -1734,8 +1734,8 @@ void W_FireGrenade(void)
 	}
 #endif
 
-	// we don't want to do newmis stuff, antilag 1 takes care of it for us
-	if (cvar("sv_antilag") == 1)
+	// The catch-up already advanced the grenade through its first frame.
+	if (antilag_projectile_cap_ms())
 	{
 		g_globalvars.newmis = EDICT_TO_PROG(world);
 		newmis = world;
@@ -1970,7 +1970,7 @@ void W_FireSuperSpikes(void)
 	antilag_lagmove_all_proj(self, newmis);
 	ScheduleProjectileSendIfLive(newmis);
 
-	if (cvar("sv_antilag") == 1)
+	if (antilag_projectile_cap_ms())
 	{
 		g_globalvars.newmis = EDICT_TO_PROG(world);
 		newmis = world;
@@ -2036,7 +2036,7 @@ void W_FireSpikes(float ox)
 	antilag_lagmove_all_proj(self, newmis);
 	ScheduleProjectileSendIfLive(newmis);
 
-	if (cvar("sv_antilag") == 1)
+	if (antilag_projectile_cap_ms())
 	{
 		g_globalvars.newmis = EDICT_TO_PROG(world);
 		newmis = world;

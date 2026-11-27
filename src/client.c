@@ -4865,14 +4865,16 @@ void PlayerPostThink(void)
 	// Antilag and Weapon Prediction
 	if (IsAntilag1())
 	{
+		int cap_ms = antilag_projectile_cap_ms();
+
 		antilag_log(self, self->antilag_data);
-		self->client_ping = antilag_current_ping_msec(self);
+		self->client_ping = cap_ms ? antilag_current_ping_msec(self) : 0;
 		if (cvar("k_midair") && (self->super_damage_finished > g_globalvars.time - (self->client_ping) / 1000))
 		{
 			self->client_predflags = (int)self->client_predflags | PRDFL_MIDAIR;
 		}
 
-		self->client_ping = min(self->client_ping, ANTILAG_REWIND_MAXPROJECTILE * 1000);
+		self->client_ping = min(self->client_ping, cap_ms);
 	}
 	else
 	{

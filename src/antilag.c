@@ -864,14 +864,21 @@ void antilag_lagmove_all_hitscan(gedict_t *e)
 	antilag_lagmove_all(e, ms);
 }
 
+// CSQC receives the compensated ping in one unsigned byte.
+int antilag_projectile_cap_ms(void)
+{
+	return IsAntilag1() ? (int) bound(0, cvar("k_antilag_projectile_cap_ms"), 255) : 0;
+}
+
 void antilag_lagmove_all_proj(gedict_t *owner, gedict_t *e)
 {
 	float ms, step_time, current_time;
 	antilag_t *list;
 	vec3_t old_org;
 	gedict_t *oself;
+	int cap_ms = antilag_projectile_cap_ms();
 
-	if (!IsAntilag1())
+	if (!cap_ms)
 	{
 		return;
 	}
@@ -891,14 +898,9 @@ void antilag_lagmove_all_proj(gedict_t *owner, gedict_t *e)
 	{
 		ms = 0;
 	}
-
-	if (ms > ANTILAG_REWIND_MAXPROJECTILE)
+	else
 	{
-		ms = ANTILAG_REWIND_MAXPROJECTILE;
-	}
-	else if (ms < 0)
-	{
-		ms = 0;
+		ms = min(ms, cap_ms / 1000.0);
 	}
 
 	// log hold stats, because we use nohold antilag moving
@@ -1015,8 +1017,9 @@ void antilag_lagmove_all_proj_bounce(gedict_t *owner, gedict_t *e)
 	antilag_t *list;
 	vec3_t old_org;
 	gedict_t *oself;
+	int cap_ms = antilag_projectile_cap_ms();
 
-	if (!IsAntilag1())
+	if (!cap_ms)
 	{
 		return;
 	}
@@ -1030,7 +1033,7 @@ void antilag_lagmove_all_proj_bounce(gedict_t *owner, gedict_t *e)
 	}
 	else
 	{
-		ms = min(ms, ANTILAG_REWIND_MAXPROJECTILE);
+		ms = min(ms, cap_ms / 1000.0);
 	}
 
 	// log hold stats, because we use nohold antilag moving
