@@ -488,6 +488,11 @@ void antilag_updateworld(void)
 {
 	antilag_t *list;
 
+	if (!IsAntilag1())
+	{
+		return;
+	}
+
 	antilag_physics_time = g_globalvars.time;
 
 	if (g_globalvars.time < antilag_nextthink_world)
@@ -861,16 +866,17 @@ void antilag_lagmove_all_hitscan(gedict_t *e)
 
 void antilag_lagmove_all_proj(gedict_t *owner, gedict_t *e)
 {
-	float ms = antilag_current_ping_msec(owner) / 1000;
-	float step_time, current_time;
+	float ms, step_time, current_time;
 	antilag_t *list;
 	vec3_t old_org;
 	gedict_t *oself;
 
-	if (cvar("sv_antilag") != 1)
+	if (!IsAntilag1())
 	{
 		return;
 	}
+
+	ms = antilag_current_ping_msec(owner) / 1000;
 
 	/*
 	 * Do not subtract ANTILAG_MAX_PREDICTION here. That mvdsv-derived offset is
@@ -1005,16 +1011,17 @@ void antilag_lagmove_all_proj(gedict_t *owner, gedict_t *e)
 
 void antilag_lagmove_all_proj_bounce(gedict_t *owner, gedict_t *e)
 {
-	float ms = antilag_current_ping_msec(owner) / 1000;
-	float step_time, current_time;
+	float ms, step_time, current_time;
 	antilag_t *list;
 	vec3_t old_org;
 	gedict_t *oself;
 
-	if (cvar("sv_antilag") != 1)
+	if (!IsAntilag1())
 	{
 		return;
 	}
+
+	ms = antilag_current_ping_msec(owner) / 1000;
 
 	/* Native newmis advances the origin separately from the latency catch-up horizon. */
 	if (ms <= (1 / 77.0))

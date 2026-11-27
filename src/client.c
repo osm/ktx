@@ -4863,9 +4863,9 @@ void PlayerPostThink(void)
 	W_WeaponFrame();
 
 	// Antilag and Weapon Prediction
-	antilag_log(self, self->antilag_data);
-	if (cvar("sv_antilag") == 1)
+	if (IsAntilag1())
 	{
+		antilag_log(self, self->antilag_data);
 		self->client_ping = antilag_current_ping_msec(self);
 		if (cvar("k_midair") && (self->super_damage_finished > g_globalvars.time - (self->client_ping) / 1000))
 		{
