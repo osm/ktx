@@ -3225,12 +3225,13 @@ qbool can_prewar(qbool fire)
  */
 void W_WeaponFrame(void)
 {
-	// Measured on the player's weapon clock like every other weapon delay, so
-	// that a predicting client can tell exactly when it ends.
-	if ((self->client_spawn_time + 0.05) > self->client_time)
+	qbool is_antilag_1 = IsAntilag1();
+	float spawn_time = is_antilag_1 ? self->client_spawn_time : self->spawn_time;
+
+	if (spawn_time + 0.05 > WeaponTime(self->client_time))
 	{
 		// Backup usercmds may carry old weapon impulses; preserve only usable selections.
-		if ((((int)self->s.v.impulse >= 1) && ((int)self->s.v.impulse <= 8)) || (int)self->s.v.impulse == 22)
+		if (is_antilag_1 && ((((int)self->s.v.impulse >= 1) && ((int)self->s.v.impulse <= 8)) || (int)self->s.v.impulse == 22))
 		{
 			if (!W_CanSwitch((int)self->s.v.impulse, false))
 			{

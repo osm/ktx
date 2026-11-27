@@ -916,6 +916,7 @@ void k_respawn(gedict_t *p, qbool body)
 {
 	gedict_t *swap = self;
 	int respawn_impulse;
+	qbool is_antilag_1 = IsAntilag1();
 
 	self = p; // warning
 	respawn_impulse = (int)self->s.v.impulse;
@@ -925,7 +926,8 @@ void k_respawn(gedict_t *p, qbool body)
 	self->s.v.button0 = 0;
 	self->s.v.button1 = 0;
 	self->s.v.button2 = 0;
-	self->s.v.impulse = 0;
+	if (is_antilag_1)
+		self->s.v.impulse = 0;
 
 	// make a copy of the dead body for appearances sake
 	if (body)
@@ -937,18 +939,22 @@ void k_respawn(gedict_t *p, qbool body)
 	SetRespawnParms();
 	// respawn
 	PutClientInServer();
-	self->weapon_generation = (self->weapon_generation % 15) + 1;
-	WeaponPrediction_ResetBaseline();
 
-	// Put the pending impulse back, unless it selects a weapon (1 to 8, or 22
-	// for the hook) that the player cannot switch to now: that choice was made
-	// for the inventory of the life before.
-	if ((((respawn_impulse >= 1) && (respawn_impulse <= 8)) || (respawn_impulse == 22)) && !W_CanSwitch(respawn_impulse, false))
+	if (is_antilag_1)
 	{
-		respawn_impulse = 0;
-	}
+		self->weapon_generation = (self->weapon_generation % 15) + 1;
+		WeaponPrediction_ResetBaseline();
 
-	self->s.v.impulse = respawn_impulse;
+		// Put the pending impulse back, unless it selects a weapon (1 to 8, or 22
+		// for the hook) that the player cannot switch to now: that choice was made
+		// for the inventory of the life before.
+		if ((((respawn_impulse >= 1) && (respawn_impulse <= 8)) || (respawn_impulse == 22)) && !W_CanSwitch(respawn_impulse, false))
+		{
+			respawn_impulse = 0;
+		}
+
+		self->s.v.impulse = respawn_impulse;
+	}
 
 	self = swap;
 }
@@ -2120,7 +2126,8 @@ void PutClientInServer(void)
 	W_SetCurrentAmmo();
 
 	self->attack_finished = WeaponTime(self->client_time);
-	self->client_spawn_time = self->client_time;
+	if (IsAntilag1())
+		self->client_spawn_time = self->client_time;
 	self->th_pain = player_pain;
 	self->th_die = PlayerDie;
 
