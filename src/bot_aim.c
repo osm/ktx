@@ -377,11 +377,19 @@ static void BotsModifyAimAtPlayerLogic(gedict_t *self)
 	// Run every frame so it decreases correctly (also resets last_rndaim_time)
 	CalculateVolatility(self);
 
-	threshold_time =
-			self->fb.firing ?
-					((int)self->s.v.weapon & (IT_LIGHTNING | IT_EITHER_NAILGUN) ?
-							(g_globalvars.time + (self->client_nextthink - self->client_time)) : (g_globalvars.time + (self->attack_finished - WeaponTime(self->client_time)))) - g_globalvars.frametime :
-					self->fb.last_rndaim_time + 0.3;
+	threshold_time = self->fb.last_rndaim_time + 0.3;
+	if (self->fb.firing)
+	{
+		qbool is_antilag_1 = IsAntilag1();
+		float next_shot = self->attack_finished;
+
+		if ((int)self->s.v.weapon & (IT_LIGHTNING | IT_EITHER_NAILGUN))
+			next_shot = is_antilag_1 ? self->client_nextthink : self->s.v.nextthink;
+		if (is_antilag_1)
+			next_shot = g_globalvars.time + (next_shot - self->client_time);
+
+		threshold_time = next_shot - g_globalvars.frametime;
+	}
 
 	if (g_globalvars.time > threshold_time)
 	{

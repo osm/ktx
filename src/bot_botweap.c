@@ -480,7 +480,9 @@ qbool AttackFinished(gedict_t *self)
 	{
 		if ((int)self->s.v.weapon & (IT_LIGHTNING | IT_EITHER_NAILGUN))
 		{
-			return (self->client_time < self->client_nextthink);
+			return IsAntilag1()
+				? self->client_time < self->client_nextthink
+				: g_globalvars.time < self->s.v.nextthink;
 		}
 
 		return true;

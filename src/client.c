@@ -4924,6 +4924,8 @@ void PlayerPostThink(void)
 		self->client_predflags = PRDFL_FORCEOFF;
 	}
 
+	if (!IsAntilag1())
+		self->client_predflags = PRDFL_FORCEOFF;
 	WeaponPrediction_MarkSendFlags();
 
 	race_player_post_think();

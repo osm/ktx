@@ -139,14 +139,22 @@ void muzzleflash(void)
 	trap_multicast(PASSVEC3(self->s.v.origin), MULTICAST_PVS);
 }
 
-/*
- * A weapon animation runs on the player's weapon clock, through client_think
- * and client_nextthink, and not through the entity's think. Each of its steps
- * still takes the think away from player_stand1() and player_run(), which
- * would reset the view weapon frame, and leaves it unscheduled: with nextthink
- * at zero the engine calls nothing. The animation ends in player_run(), which
- * puts a real think back.
- */
+static void ScheduleWeaponFrame(void (*next)(void), int index)
+{
+	if (IsAntilag1())
+	{
+		self->client_think = (func_t)next;
+		self->client_nextthink = self->client_time + 0.1;
+		self->client_thinkindex = index;
+		self->think = (func_t)SUB_Null;
+		self->s.v.nextthink = 0;
+	}
+	else
+	{
+		self->think = (func_t)next;
+		self->s.v.nextthink = g_globalvars.time + 0.1;
+	}
+}
 
 void player_chain1(void)
 {
@@ -222,12 +230,7 @@ void player_chain5(void)
 void player_shot1(void)
 {
 	self->s.v.frame = 113;
-	self->client_think = (func_t)player_shot2;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 2;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_shot2, 2);
 
 	self->s.v.weaponframe = 1;
 	muzzleflash();
@@ -236,12 +239,7 @@ void player_shot1(void)
 void player_shot2(void)
 {
 	self->s.v.frame = 114;
-	self->client_think = (func_t)player_shot3;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 3;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_shot3, 3);
 
 	self->s.v.weaponframe = 2;
 }
@@ -249,12 +247,7 @@ void player_shot2(void)
 void player_shot3(void)
 {
 	self->s.v.frame = 115;
-	self->client_think = (func_t)player_shot4;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 4;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_shot4, 4);
 
 	self->s.v.weaponframe = 3;
 }
@@ -262,24 +255,14 @@ void player_shot3(void)
 void player_shot4(void)
 {
 	self->s.v.frame = 116;
-	self->client_think = (func_t)player_shot5;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 5;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_shot5, 5);
 	self->s.v.weaponframe = 4;
 }
 
 void player_shot5(void)
 {
 	self->s.v.frame = 117;
-	self->client_think = (func_t)player_shot6;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 6;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_shot6, 6);
 
 	self->s.v.weaponframe = 5;
 }
@@ -288,12 +271,7 @@ void player_shot6(void)
 {
 	self->s.v.frame = 118;
 	self->walkframe = 0;
-	self->client_think = (func_t)player_run;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 0;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_run, 0);
 
 	self->s.v.weaponframe = 6;
 }
@@ -301,12 +279,7 @@ void player_shot6(void)
 void player_axe1(void)
 {
 	self->s.v.frame = 119;
-	self->client_think = (func_t)player_axe2;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 2;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_axe2, 2);
 
 	self->s.v.weaponframe = 1;
 }
@@ -314,12 +287,7 @@ void player_axe1(void)
 void player_axe2(void)
 {
 	self->s.v.frame = 120;
-	self->client_think = (func_t)player_axe3;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 3;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_axe3, 3);
 
 	self->s.v.weaponframe = 2;
 }
@@ -327,12 +295,7 @@ void player_axe2(void)
 void player_axe3(void)
 {
 	self->s.v.frame = 121;
-	self->client_think = (func_t)player_axe4;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 4;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_axe4, 4);
 
 	self->s.v.weaponframe = 3;
 	W_FireAxe();
@@ -342,12 +305,7 @@ void player_axe4(void)
 {
 	self->s.v.frame = 122;
 	self->walkframe = 0;
-	self->client_think = (func_t)player_run;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 0;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_run, 0);
 
 	self->s.v.weaponframe = 4;
 }
@@ -355,12 +313,7 @@ void player_axe4(void)
 void player_axeb1(void)
 {
 	self->s.v.frame = 125;
-	self->client_think = (func_t)player_axeb2;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 2;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_axeb2, 2);
 
 	self->s.v.weaponframe = 5;
 }
@@ -368,12 +321,7 @@ void player_axeb1(void)
 void player_axeb2(void)
 {
 	self->s.v.frame = 126;
-	self->client_think = (func_t)player_axeb3;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 3;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_axeb3, 3);
 
 	self->s.v.weaponframe = 6;
 }
@@ -381,12 +329,7 @@ void player_axeb2(void)
 void player_axeb3(void)
 {
 	self->s.v.frame = 127;
-	self->client_think = (func_t)player_axeb4;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 4;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_axeb4, 4);
 
 	self->s.v.weaponframe = 7;
 	W_FireAxe();
@@ -396,12 +339,7 @@ void player_axeb4(void)
 {
 	self->s.v.frame = 128;
 	self->walkframe = 0;
-	self->client_think = (func_t)player_run;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 0;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_run, 0);
 
 	self->s.v.weaponframe = 8;
 }
@@ -409,12 +347,7 @@ void player_axeb4(void)
 void player_axec1(void)
 {
 	self->s.v.frame = 131;
-	self->client_think = (func_t)player_axec2;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 2;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_axec2, 2);
 
 	self->s.v.weaponframe = 1;
 }
@@ -422,12 +355,7 @@ void player_axec1(void)
 void player_axec2(void)
 {
 	self->s.v.frame = 132;
-	self->client_think = (func_t)player_axec3;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 3;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_axec3, 3);
 
 	self->s.v.weaponframe = 2;
 }
@@ -435,12 +363,7 @@ void player_axec2(void)
 void player_axec3(void)
 {
 	self->s.v.frame = 133;
-	self->client_think = (func_t)player_axec4;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 4;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_axec4, 4);
 
 	self->s.v.weaponframe = 3;
 	W_FireAxe();
@@ -450,12 +373,7 @@ void player_axec4(void)
 {
 	self->s.v.frame = 134;
 	self->walkframe = 0;
-	self->client_think = (func_t)player_run;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 0;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_run, 0);
 
 	self->s.v.weaponframe = 4;
 }
@@ -463,12 +381,7 @@ void player_axec4(void)
 void player_axed1(void)
 {
 	self->s.v.frame = 137;
-	self->client_think = (func_t)player_axed2;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 2;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_axed2, 2);
 
 	self->s.v.weaponframe = 5;
 }
@@ -476,12 +389,7 @@ void player_axed1(void)
 void player_axed2(void)
 {
 	self->s.v.frame = 138;
-	self->client_think = (func_t)player_axed3;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 3;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_axed3, 3);
 
 	self->s.v.weaponframe = 6;
 }
@@ -489,12 +397,7 @@ void player_axed2(void)
 void player_axed3(void)
 {
 	self->s.v.frame = 139;
-	self->client_think = (func_t)player_axed4;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 4;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_axed4, 4);
 
 	self->s.v.weaponframe = 7;
 	W_FireAxe();
@@ -504,27 +407,28 @@ void player_axed4(void)
 {
 	self->s.v.frame = 140;
 	self->walkframe = 0;
-	self->client_think = (func_t)player_run;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 0;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_run, 0);
 
 	self->s.v.weaponframe = 8;
 }
 
 //============================================================================
 
+static void AdjustAutomaticFireTime(void)
+{
+	if (!IsAntilag1())
+	{
+		// Allow up to 50 ms of catch-up on the server's 100 ms firing interval.
+		float drift = self->s.v.ltime - g_globalvars.time;
+		self->s.v.nextthink = g_globalvars.time + max(drift, -0.05) + 0.1;
+		self->s.v.ltime = self->s.v.nextthink;
+	}
+}
+
 void player_nail1(void)
 {
 	self->s.v.frame = 103;
-	self->client_think = (func_t)player_nail2;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 2;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_nail2, 2);
 
 	if (!self->s.v.button0 || intermission_running || self->s.v.impulse)
 	{
@@ -534,6 +438,7 @@ void player_nail1(void)
 		return;
 	}
 
+	AdjustAutomaticFireTime();
 	muzzleflash();
 
 	self->s.v.weaponframe = self->s.v.weaponframe + 1;
@@ -551,12 +456,7 @@ void player_nail1(void)
 void player_nail2(void)
 {
 	self->s.v.frame = 104;
-	self->client_think = (func_t)player_nail1;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 1;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_nail1, 1);
 
 	if (!self->s.v.button0 || intermission_running || self->s.v.impulse)
 	{
@@ -566,6 +466,7 @@ void player_nail2(void)
 		return;
 	}
 
+	AdjustAutomaticFireTime();
 	muzzleflash();
 
 	self->s.v.weaponframe = self->s.v.weaponframe + 1;
@@ -585,12 +486,7 @@ void player_nail2(void)
 void player_light1(void)
 {
 	self->s.v.frame = 105;
-	self->client_think = (func_t)player_light2;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 2;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_light2, 2);
 
 	if (!self->s.v.button0 || intermission_running || self->s.v.impulse)
 	{
@@ -605,6 +501,7 @@ void player_light1(void)
 		return;
 	}
 
+	AdjustAutomaticFireTime();
 	muzzleflash();
 
 	self->s.v.weaponframe = self->s.v.weaponframe + 1;
@@ -621,12 +518,7 @@ void player_light1(void)
 void player_light2(void)
 {
 	self->s.v.frame = 106;
-	self->client_think = (func_t)player_light1;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 1;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_light1, 1);
 
 	if (!self->s.v.button0 || intermission_running || self->s.v.impulse)
 	{
@@ -641,6 +533,7 @@ void player_light2(void)
 		return;
 	}
 
+	AdjustAutomaticFireTime();
 	muzzleflash();
 
 	self->s.v.weaponframe = self->s.v.weaponframe + 1;
@@ -658,12 +551,7 @@ void player_light2(void)
 void player_rocket1(void)
 {
 	self->s.v.frame = 107;
-	self->client_think = (func_t)player_rocket2;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 2;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_rocket2, 2);
 
 	self->s.v.weaponframe = 1;
 	muzzleflash();
@@ -672,12 +560,7 @@ void player_rocket1(void)
 void player_rocket2(void)
 {
 	self->s.v.frame = 108;
-	self->client_think = (func_t)player_rocket3;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 3;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_rocket3, 3);
 
 	self->s.v.weaponframe = 2;
 }
@@ -685,12 +568,7 @@ void player_rocket2(void)
 void player_rocket3(void)
 {
 	self->s.v.frame = 109;
-	self->client_think = (func_t)player_rocket4;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 4;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_rocket4, 4);
 
 	self->s.v.weaponframe = 3;
 }
@@ -698,12 +576,7 @@ void player_rocket3(void)
 void player_rocket4(void)
 {
 	self->s.v.frame = 110;
-	self->client_think = (func_t)player_rocket5;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 5;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_rocket5, 5);
 
 	self->s.v.weaponframe = 4;
 }
@@ -711,12 +584,7 @@ void player_rocket4(void)
 void player_rocket5(void)
 {
 	self->s.v.frame = 111;
-	self->client_think = (func_t)player_rocket6;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 6;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_rocket6, 6);
 
 	self->s.v.weaponframe = 5;
 }
@@ -725,12 +593,7 @@ void player_rocket6(void)
 {
 	self->s.v.frame = 112;
 	self->walkframe = 0;
-	self->client_think = (func_t)player_run;
-	self->client_nextthink = self->client_time + 0.1;
-	self->client_thinkindex = 0;
-
-	self->think = (func_t)SUB_Null;
-	self->s.v.nextthink = 0;
+	ScheduleWeaponFrame(player_run, 0);
 
 	self->s.v.weaponframe = 6;
 }
