@@ -544,7 +544,7 @@ void player_nail1(void)
 
 	SuperDamageSound();
 	W_FireSpikes(4);
-	self->attack_finished = self->client_time + 0.2;
+	self->attack_finished = WeaponTime(self->client_time) + 0.2;
 	AmmoUsed(self);
 }
 
@@ -576,7 +576,7 @@ void player_nail2(void)
 
 	SuperDamageSound();
 	W_FireSpikes(-4);
-	self->attack_finished = self->client_time + 0.2;
+	self->attack_finished = WeaponTime(self->client_time) + 0.2;
 	AmmoUsed(self);
 }
 
@@ -615,7 +615,7 @@ void player_light1(void)
 
 	SuperDamageSound();
 	W_FireLightning();
-	self->attack_finished = self->client_time + 0.2;
+	self->attack_finished = WeaponTime(self->client_time) + 0.2;
 }
 
 void player_light2(void)
@@ -651,7 +651,7 @@ void player_light2(void)
 
 	SuperDamageSound();
 	W_FireLightning();
-	self->attack_finished = self->client_time + 0.2;
+	self->attack_finished = WeaponTime(self->client_time) + 0.2;
 }
 
 //============================================================================
@@ -1280,7 +1280,7 @@ void PlayerDie(void)
 		if (self->hook_out)
 		{
 			GrappleReset(self->hook);
-			self->attack_finished = self->client_time + 0.75;
+			self->attack_finished = WeaponTime(self->client_time) + 0.75;
 			self->hook_out = true; // FIXME: for which reason this set to true?
 		}
 

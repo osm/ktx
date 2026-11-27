@@ -1945,7 +1945,7 @@ void W_FireSuperSpikes(void)
 	self->ps.wpn[wpSNG].attacks++;
 
 	sound(self, CHAN_WEAPON, "weapons/spike2.wav", 1, ATTN_NORM);
-	self->attack_finished = self->client_time + 0.2;
+	self->attack_finished = WeaponTime(self->client_time) + 0.2;
 
 	if (match_in_progress == 2)
 	{
@@ -2013,7 +2013,7 @@ void W_FireSpikes(float ox)
 	self->ps.wpn[wpNG].attacks++;
 
 	sound(self, CHAN_WEAPON, "weapons/rocket1i.wav", 1, ATTN_NORM);
-	self->attack_finished = self->client_time + 0.2;
+	self->attack_finished = WeaponTime(self->client_time) + 0.2;
 
 	if (match_in_progress == 2)
 	{
@@ -2432,13 +2432,30 @@ static int W_AxeSwing(float client_time)
 	return (ms + (ms >> 2) + (ms >> 5) + (ms >> 9)) & 3;
 }
 
+qbool IsAntilag1(void)
+{
+#ifdef CSQC_SUPPORT
+	return cvar("sv_antilag") == 1;
+#else
+	return false;
+#endif
+}
+
+float WeaponTime(float command_time)
+{
+	return IsAntilag1() ? command_time : g_globalvars.time;
+}
+
 void W_Attack(void)
 {
+	float weapon_time;
+
 	if (!W_CheckNoAmmo())
 	{
 		return;
 	}
 
+	weapon_time = WeaponTime(self->client_time);
 	self->lastwepfired = self->s.v.weapon;
 
 	trap_makevectors(self->s.v.v_angle);	// calculate forward angle for velocity
@@ -2449,13 +2466,13 @@ void W_Attack(void)
 		case IT_AXE:
 			if (self->ctf_flag & CTF_RUNE_HST)
 			{
-				self->attack_finished = self->client_time + 0.5
+				self->attack_finished = weapon_time + 0.5
 						- (cvar("k_ctf_rune_power_hst") / 10);
 				HasteSound(self);
 			}
 			else
 			{
-				self->attack_finished = self->client_time + 0.5;
+				self->attack_finished = weapon_time + 0.5;
 			}
 
 			// crt - no axe sound for spec
@@ -2464,7 +2481,7 @@ void W_Attack(void)
 				sound(self, CHAN_WEAPON, "weapons/ax1.wav", 1, ATTN_NORM);
 			}
 
-			switch (W_AxeSwing(self->client_time))
+			switch (W_AxeSwing(weapon_time))
 			{
 				case 0:
 					player_axe1();
@@ -2489,7 +2506,7 @@ void W_Attack(void)
 			player_shot1();
 			if (self->ctf_flag & CTF_RUNE_HST)
 			{
-				self->attack_finished = self->client_time + 0.5
+				self->attack_finished = weapon_time + 0.5
 						- (cvar("k_ctf_rune_power_hst") / 10);
 				HasteSound(self);
 			}
@@ -2497,15 +2514,15 @@ void W_Attack(void)
 			{
 				if (cvar("k_instagib") == 1)
 				{
-					self->attack_finished = self->client_time + 1.2;
+					self->attack_finished = weapon_time + 1.2;
 				}
 				else if (cvar("k_instagib") == 2)
 				{
-					self->attack_finished = self->client_time + 0.7;
+					self->attack_finished = weapon_time + 0.7;
 				}
 				else
 				{
-					self->attack_finished = self->client_time + 0.5;
+					self->attack_finished = weapon_time + 0.5;
 				}
 			}
 
@@ -2516,13 +2533,13 @@ void W_Attack(void)
 			player_shot1();
 			if (self->ctf_flag & CTF_RUNE_HST)
 			{
-				self->attack_finished = self->client_time + 0.5
+				self->attack_finished = weapon_time + 0.5
 						- (cvar("k_ctf_rune_power_hst") / 20);
 				HasteSound(self);
 			}
 			else
 			{
-				self->attack_finished = self->client_time + (k_yawnmode ? 0.8 : 0.7);
+				self->attack_finished = weapon_time + (k_yawnmode ? 0.8 : 0.7);
 			}
 
 			W_FireSuperShotgun();
@@ -2540,13 +2557,13 @@ void W_Attack(void)
 			player_rocket1();
 			if (self->ctf_flag & CTF_RUNE_HST)
 			{
-				self->attack_finished = self->client_time + 0.5
+				self->attack_finished = weapon_time + 0.5
 						- (cvar("k_ctf_rune_power_hst") / 10);
 				HasteSound(self);
 			}
 			else
 			{
-				self->attack_finished = self->client_time + 0.6;
+				self->attack_finished = weapon_time + 0.6;
 			}
 
 			W_FireGrenade();
@@ -2556,20 +2573,20 @@ void W_Attack(void)
 			player_rocket1();
 			if (self->ctf_flag & CTF_RUNE_HST)
 			{
-				self->attack_finished = self->client_time + 0.5
+				self->attack_finished = weapon_time + 0.5
 						- (cvar("k_ctf_rune_power_hst") / 20);
 				HasteSound(self);
 			}
 			else
 			{
-				self->attack_finished = self->client_time + 0.8;
+				self->attack_finished = weapon_time + 0.8;
 			}
 
 			W_FireRocket();
 			break;
 
 		case IT_LIGHTNING:
-			self->attack_finished = self->client_time + 0.1;
+			self->attack_finished = weapon_time + 0.1;
 			sound(self, CHAN_AUTO, "weapons/lstart.wav", 1, ATTN_NORM);
 			player_light1();
 			break;
@@ -2584,7 +2601,7 @@ void W_Attack(void)
 				player_chain1();
 			}
 
-			self->attack_finished = self->client_time + 0.1;
+			self->attack_finished = weapon_time + 0.1;
 			break;
 	}
 }
@@ -2708,7 +2725,7 @@ qbool W_ChangeWeapon(int wp)
 {
 	int it, am, fl = 0;
 
-	if ((self->client_time < self->attack_finished) && wp != 22)
+	if ((WeaponTime(self->client_time) < self->attack_finished) && wp != 22)
 	{
 		return false;
 	}
@@ -2844,7 +2861,7 @@ qbool CycleWeaponCommand(void)
 {
 	int i, it, am;
 
-	if (self->client_time < self->attack_finished)
+	if (WeaponTime(self->client_time) < self->attack_finished)
 	{
 		return false;
 	}
@@ -2943,7 +2960,7 @@ qbool CycleWeaponReverseCommand(void)
 {
 	int i, it, am;
 
-	if (self->client_time < self->attack_finished)
+	if (WeaponTime(self->client_time) < self->attack_finished)
 	{
 		return false;
 	}
@@ -3252,7 +3269,7 @@ void W_WeaponFrame(void)
 		return;
 	}
 
-	if (self->client_time < self->attack_finished)
+	if (WeaponTime(self->client_time) < self->attack_finished)
 	{
 		return;
 	}

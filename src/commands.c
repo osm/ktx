@@ -5018,7 +5018,7 @@ void kfjump(void)
 		return;
 	}
 
-	if (self->client_time < self->attack_finished)
+	if (WeaponTime(self->client_time) < self->attack_finished)
 	{
 		return; // sanity
 	}
@@ -5043,7 +5043,7 @@ void krjump(void)
 		return;
 	}
 
-	if (self->client_time < self->attack_finished)
+	if (WeaponTime(self->client_time) < self->attack_finished)
 	{
 		return; // sanity
 	}

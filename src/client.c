@@ -2119,7 +2119,7 @@ void PutClientInServer(void)
 		self->s.v.weapon = W_BestWeapon();
 	W_SetCurrentAmmo();
 
-	self->attack_finished = self->client_time;
+	self->attack_finished = WeaponTime(self->client_time);
 	self->client_spawn_time = self->client_time;
 	self->th_pain = player_pain;
 	self->th_die = PlayerDie;
@@ -4234,7 +4234,7 @@ void PlayerPreThink(void)
 		SetVector(self->s.v.velocity, 0, 0, 0);
 	}
 
-	if ((self->client_time > self->attack_finished) && (self->s.v.currentammo == 0)
+	if ((WeaponTime(self->client_time) > self->attack_finished) && (self->s.v.currentammo == 0)
 			&& (self->s.v.weapon != IT_AXE) && (self->s.v.weapon != IT_HOOK))
 	{
 		self->s.v.weapon = W_BestWeapon();
