@@ -788,6 +788,7 @@ void FirstFrame(void)
 
 	RegisterCvar("k_noitems");
 	RegisterCvarEx("k_antilag_projectile_cap_ms", "80");
+	RegisterCvarEx("k_antilag_projectile_threshold_ms", "12.987013");
 	RegisterCvarEx("k_pause_without_matchtag", "0");
 
 	RegisterCvar("k_random_maplist"); // select random map from k_ml_XXX variables.

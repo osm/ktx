@@ -870,6 +870,21 @@ int antilag_projectile_cap_ms(void)
 	return IsAntilag1() ? (int) bound(0, cvar("k_antilag_projectile_cap_ms"), 255) : 0;
 }
 
+static float antilag_projectile_catchup_time(gedict_t *owner, int cap_ms)
+{
+	float ping_ms = antilag_current_ping_msec(owner);
+	float threshold_ms = max(0, cvar("k_antilag_projectile_threshold_ms"));
+
+	/*
+	 * Do not subtract ANTILAG_MAX_PREDICTION here. That mvdsv-derived offset is
+	 * for estimating predicted player hitbox time in hitscan rewind. Projectiles
+	 * are new objects fired from client input, and CSQC renders them immediately
+	 * from the same native newmis phase, so the authoritative projectile must be
+	 * advanced by the full input-to-server time up to the projectile horizon.
+	 */
+	return ping_ms <= threshold_ms ? 0 : min(ping_ms, cap_ms) / 1000;
+}
+
 void antilag_lagmove_all_proj(gedict_t *owner, gedict_t *e)
 {
 	float ms, step_time, current_time;
@@ -883,25 +898,7 @@ void antilag_lagmove_all_proj(gedict_t *owner, gedict_t *e)
 		return;
 	}
 
-	ms = antilag_current_ping_msec(owner) / 1000;
-
-	/*
-	 * Do not subtract ANTILAG_MAX_PREDICTION here. That mvdsv-derived offset is
-	 * for estimating predicted player hitbox time in hitscan rewind. Projectiles
-	 * are new objects fired from client input, and CSQC renders them immediately
-	 * from the same native newmis phase, so the authoritative projectile must be
-	 * advanced by the full input-to-server time up to the projectile horizon.
-	 */
-
-	/* A one-frame ping has no meaningful catch-up beyond the native newmis step. */
-	if (ms <= (1 / 77.0))
-	{
-		ms = 0;
-	}
-	else
-	{
-		ms = min(ms, cap_ms / 1000.0);
-	}
+	ms = antilag_projectile_catchup_time(owner, cap_ms);
 
 	// log hold stats, because we use nohold antilag moving
 
@@ -1024,17 +1021,7 @@ void antilag_lagmove_all_proj_bounce(gedict_t *owner, gedict_t *e)
 		return;
 	}
 
-	ms = antilag_current_ping_msec(owner) / 1000;
-
-	/* Native newmis advances the origin separately from the latency catch-up horizon. */
-	if (ms <= (1 / 77.0))
-	{
-		ms = 0;
-	}
-	else
-	{
-		ms = min(ms, cap_ms / 1000.0);
-	}
+	ms = antilag_projectile_catchup_time(owner, cap_ms);
 
 	// log hold stats, because we use nohold antilag moving
 	for (list = antilag_list_players; list != NULL; list = list->next)
